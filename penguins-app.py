@@ -1,80 +1,100 @@
-import streamlit as st
-import pandas as pd
+#import Library
 import numpy as np
+import pandas as pd
+import streamlit as st 
 import pickle
-from sklearn.ensemble import RandomForestClassifier
 
-st.write("""
-# Penguin Prediction App
+#App config
+st.title('Credit Card Defaulter Prediction System')
+#st.progress(progress_variable_1_to_100)
+#Sidebar
 
-This app predicts the **Palmer Penguin** species!
+# loading the trained model classifier is the model name
+pickle_in_dt_tunned_classifier = open(r'C:\Users\KASISH\Documents\ML2 Projects\dt_tuned_classifier.pkl', 'rb')
+pickle_in_gnb_classifier = open(r'C:\Users\KASISH\Documents\ML2 Projects\gnb_classifier.pkl', 'rb')
+pickle_in_knn_tunned_classifier = open(r'C:\Users\KASISH\Documents\ML2 Projects\knn_tuned_classifier.pkl', 'rb')
+pickle_in_logit_classifier = open(r'C:\Users\KASISH\Documents\ML2 Projects\logit_classifier.pkl', 'rb')
+pickle_in_dt_stack_model_classifier = open(r'C:\Users\KASISH\Documents\ML2 Projects\stack_model_classifier_updated.pkl')
 
-Data obtained from the [palmerpenguins library](https://github.com/allisonhorst/palmerpenguins) in R by Allison Horst.
-""")
+model_pkl=st.selectbox("Models",("DT Tunned", "GNB","KNN","Logit","Stack"))
 
-st.sidebar.header('User Input Features')
+@st.cache()
+  
+# defining the function which will make the prediction using the data which the user inputs 
+def prediction(EDUCATION,SEX,MARRIAGE, PAY_0,PAY_2,PAY_3,PAY_4,PAY_5,PAY_6,PAY_AMT_1):   
+ 
+    # Pre-processing user input    
+    if SEX == "Male":
+        SEX = 1
+    else:
+        SEX = 2
+ 
+    if MARRIAGE == "Married":
+        MARRIAGE = 1
+    elif MARRIAGE == "Single":  
+        MARRIAGE = 2
+    else:
+        MARRIAGE = 3
+        
+    if EDUCATION == "Graduate School":
+        EDUCATION = 1
+    elif EDUCATION == "University":  
+        EDUCATION = 2
+    elif EDUCATION == "High School":
+        EDUCATION = 3    
+    else:
+        EDUCATION = 4    
+ 
+    
+    #PAY_0 = Last_payment_day
+    #PAY_AMT_1 = Last_bill_amount
+    classifier = pickle.load(pickle_in_dt_tunned_classifier)
+    if model_pkl == "DT Tunned":
+      classifier = pickle.load(pickle_in_dt_tunned_classifier)
+      if model_pkl =="GNB":
+            classifier = pickle.load(pickle_in_gnb_classifier)
+      elif model_pkl=="KNN":
+            classifier = pickle.load(pickle_in_knn_tunned_classifier)
+      elif model_pkl=="Logit":
+            classifier = pickle.load(pickle_in_logit_classifier)
+      elif model_pkl=="Stack":
+            classifier = pickle.load(pickle_in_dt_stack_model_classifier)
 
-st.sidebar.markdown("""
-[Example CSV input file](https://raw.githubusercontent.com/dataprofessor/data/master/penguins_example.csv)
-""")
+    # Making predictions 
+    prediction = classifier.predict( 
+        [[EDUCATION,SEX,MARRIAGE,PAY_0,PAY_2,PAY_3,PAY_4,PAY_5,PAY_6,PAY_AMT_1]])
+     
+    if prediction == 0:
+        pred = 'not be a defaulter'
+    else:
+        pred = 'be a defaulter'
+    return pred
+      
+  
+# this is the main function in which we define our webpage  
+def main(): 
+     # front end elements of the web page 
+      
+     # display the front end aspect
+     
+     #following lines create boxes in which user can enter data required to make prediction 
+     EDUCATION = st.selectbox('Custommer Highest Education',("Graduate School","University","High School","Others"))
+     SEX = st.selectbox('Gender',("Male","Female"))
+     MARRIAGE = st.selectbox('Marital Status',("Married","Single","Others")) 
+     PAY_0 = st.select_slider('First Payment', options=[-2,-1,0,1,2])
+     PAY_2 = st.select_slider('Second Payment', options=[-2,-1,0,1,2])
+     PAY_3 = st.select_slider('Third Payment', options=[-2,-1,0,1,2])
+     PAY_4 = st.select_slider('Fourth Payment', options=[-2,-1,0,1,2])
+     PAY_5 = st.select_slider('Fifth Payment', options=[-2,-1,0,1,2])
+     PAY_6 = st.select_slider('Sixth Payment', options=[-2,-1,0,1,2])
+     PAY_AMT_1 = st.number_input("Pay Amount")
+     result =""
+      
+     # when 'Predict' is clicked, make the prediction and store it  
+     if st.button("Predict"):
+          result = prediction(EDUCATION,SEX,MARRIAGE,PAY_0,PAY_2,PAY_3,PAY_4,PAY_5,PAY_6,PAY_AMT_1) 
+          st.success('This customer may {}'.format(result))
+          print(PAY_AMT_1)
 
-# Collects user input features into dataframe
-uploaded_file = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"])
-if uploaded_file is not None:
-    input_df = pd.read_csv(uploaded_file)
-else:
-    def user_input_features():
-        island = st.sidebar.selectbox('Island',('Biscoe','Dream','Torgersen'))
-        sex = st.sidebar.selectbox('Sex',('male','female'))
-        bill_length_mm = st.sidebar.slider('Bill length (mm)', 32.1,59.6,43.9)
-        bill_depth_mm = st.sidebar.slider('Bill depth (mm)', 13.1,21.5,17.2)
-        flipper_length_mm = st.sidebar.slider('Flipper length (mm)', 172.0,231.0,201.0)
-        body_mass_g = st.sidebar.slider('Body mass (g)', 2700.0,6300.0,4207.0)
-        data = {'island': island,
-                'bill_length_mm': bill_length_mm,
-                'bill_depth_mm': bill_depth_mm,
-                'flipper_length_mm': flipper_length_mm,
-                'body_mass_g': body_mass_g,
-                'sex': sex}
-        features = pd.DataFrame(data, index=[0])
-        return features
-    input_df = user_input_features()
-
-# Combines user input features with entire penguins dataset
-# This will be useful for the encoding phase
-penguins_raw = pd.read_csv('penguins_cleaned.csv')
-penguins = penguins_raw.drop(columns=['species'])
-df = pd.concat([input_df,penguins],axis=0)
-
-# Encoding of ordinal features
-# https://www.kaggle.com/pratik1120/penguin-dataset-eda-classification-and-clustering
-encode = ['sex','island']
-for col in encode:
-    dummy = pd.get_dummies(df[col], prefix=col)
-    df = pd.concat([df,dummy], axis=1)
-    del df[col]
-df = df[:1] # Selects only the first row (the user input data)
-
-# Displays the user input features
-st.subheader('User Input features')
-
-if uploaded_file is not None:
-    st.write(df)
-else:
-    st.write('Awaiting CSV file to be uploaded. Currently using example input parameters (shown below).')
-    st.write(df)
-
-# Reads in saved classification model
-load_clf = pickle.load(open('penguins_clf.pkl', 'rb'))
-
-# Apply model to make predictions
-prediction = load_clf.predict(df)
-prediction_proba = load_clf.predict_proba(df)
-
-
-st.subheader('Prediction')
-penguins_species = np.array(['Adelie','Chinstrap','Gentoo'])
-st.write(penguins_species[prediction])
-
-st.subheader('Prediction Probability')
-st.write(prediction_proba)
+if __name__=='__main__': 
+    main()
