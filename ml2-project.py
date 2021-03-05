@@ -5,44 +5,6 @@ import streamlit as st
 import pickle
 
 
-
-
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-# to suppress warnings 
-from warnings import filterwarnings
-filterwarnings('ignore')
-
-# display all columns of the dataframe
-pd.options.display.max_columns = None
-
-# display all rows of the dataframe
-pd.options.display.max_rows = None
- 
-# to display the float values upto 6 decimal places     
-pd.options.display.float_format = '{:.6f}'.format
-
-# import train-test split 
-from sklearn.model_selection import train_test_split
-
-# import StandardScaler to perform scaling
-from sklearn.preprocessing import StandardScaler 
-
-# import various functions from sklearn
-from sklearn.metrics import classification_report
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn import tree
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import accuracy_score,f1_score,roc_auc_score,precision_score,recall_score,cohen_kappa_score,roc_curve,auc
-
-# import the functions for visualizing the decision tree
-import pydotplus
-from IPython.display import Image  
-
-
 #App config
 st.title('')
 #st.progress(progress_variable_1_to_100)
