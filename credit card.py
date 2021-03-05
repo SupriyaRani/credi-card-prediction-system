@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st 
 import pickle
-import streamlit.components.v1 as components
+#import streamlit.components.v1 as components
 import matplotlib.pyplot as plt
 
 #App config
