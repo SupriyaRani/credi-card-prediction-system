@@ -14,7 +14,7 @@ st.title('Credit Card Defaulter Prediction System')
 pickle_in_dt_tunned_classifier = open('dt_tuned_classifier.pkl', 'rb')
 pickle_in_gnb_classifier = open('gnb_classifier.pkl', 'rb')
 pickle_in_knn_tunned_classifier = open('knn_tuned_classifier.pkl', 'rb')
-pickle_in_logit_classifier = open('logit_classifier.pkl', 'rb')
+pickle_in_logit_classifier = open('Logit_classifier.pkl', 'rb')
 pickle_in_dt_stack_model_classifier = open('stack_model_classifier_updated.pkl')
 
 model_pkl=st.selectbox("Models",("DT Tunned", "GNB","KNN","Logit","Stack"))
