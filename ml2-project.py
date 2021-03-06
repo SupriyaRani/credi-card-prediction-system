@@ -82,12 +82,12 @@ def main():
      EDUCATION = st.selectbox('Custommer Highest Education',("Graduate School","University","High School","Others"))
      SEX = st.selectbox('Gender',("Male","Female"))
      MARRIAGE = st.selectbox('Marital Status',("Married","Single","Others")) 
-     PAY_0 = st.select_slider('First Payment', options=[-2,-1,0,1,2])
-     PAY_2 = st.select_slider('Second Payment', options=[-2,-1,0,1,2])
-     PAY_3 = st.select_slider('Third Payment', options=[-2,-1,0,1,2])
-     PAY_4 = st.select_slider('Fourth Payment', options=[-2,-1,0,1,2])
-     PAY_5 = st.select_slider('Fifth Payment', options=[-2,-1,0,1,2])
-     PAY_6 = st.select_slider('Sixth Payment', options=[-2,-1,0,1,2])
+     PAY_0 = st.slider('First Payment', min_value=-2, max_value=8)
+     PAY_2 = st.slider('Second Payment', min_value=-2, max_value=8)
+     PAY_3 = st.slider('Third Payment', min_value=-2, max_value=8)
+     PAY_4 = st.slider('Fourth Payment', min_value=-2, max_value=8)
+     PAY_5 = st.slider('Fifth Payment', min_value=-2, max_value=8)
+     PAY_6 = st.slider('Sixth Payment', min_value=-2, max_value=8)
      PAY_AMT_1 = st.number_input("Pay Amount")
      result =""
       
